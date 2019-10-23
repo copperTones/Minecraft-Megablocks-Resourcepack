@@ -7,6 +7,13 @@ def printRGB(rgb):
 		print(f'{c:.0f}', 'RGB'[i], sep='', end=' ')
 	print('\n')
 
-for path, folders, files in os.walk(os.getcwd()):
-	print(path, folders, files)
+
+print('Getting files')
+imgList = []
+for path, folders, files in os.walk(os.getcwd()):#add all files to imgList
+	for file in files:
+		imgList.append(file + path)
+print(imgList)
+#print('Sorting files')
+#for file in imgList:
 input()
