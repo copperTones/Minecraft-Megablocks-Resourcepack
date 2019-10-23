@@ -12,8 +12,27 @@ print('Getting files')
 imgList = []
 for path, folders, files in os.walk(os.getcwd()):#add all files to imgList
 	for file in files:
-		imgList.append(file + path)
+		imgList.append(os.path.join(path, file))
 print(imgList)
-#print('Sorting files')
-#for file in imgList:
+
+input()
+print('Sorting files')
+file = imgList[0]
+print(file)
+'''
+for file in imgList:
+	try:
+		img = Image.open(file)
+		st = ImageStat.Stat(img)
+		printRGB(st.mean)
+	except:
+		pass
+'''
+try:
+	img = Image.open(file)
+	st = ImageStat.Stat(img)
+	printRGB(st.mean)
+except:
+	pass
+#'''
 input()
