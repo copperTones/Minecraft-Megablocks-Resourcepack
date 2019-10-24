@@ -8,18 +8,17 @@ def printRGB(rgb):
 	print('\n')
 
 
+srcPack = 'assets'
+
 print('Getting files')
 imgList = []
-for path, folders, files in os.walk(os.getcwd()):#add all files to imgList
+dir = os.path.join(os.getcwd(), srcPack, 'minecraft', 'textures', 'block')
+for path, folders, files in os.walk(dir):#add all blocks to imgList
 	for file in files:
 		imgList.append(os.path.join(path, file))
 print(imgList)
 
-input()
 print('Sorting files')
-file = imgList[0]
-print(file)
-'''
 for file in imgList:
 	try:
 		img = Image.open(file)
@@ -27,12 +26,4 @@ for file in imgList:
 		printRGB(st.mean)
 	except:
 		pass
-'''
-try:
-	img = Image.open(file)
-	st = ImageStat.Stat(img)
-	printRGB(st.mean)
-except:
-	pass
-#'''
 input()
