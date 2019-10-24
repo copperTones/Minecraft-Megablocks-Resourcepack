@@ -8,7 +8,8 @@ def printRGB(rgb):
 	print('')
 
 
-srcPack = 'assets'
+srcPack = 'assets'	#name of 'recourcepack'
+imgSize = 16		#size of images accepted
 
 print('Getting files')
 imgList = []
@@ -23,14 +24,15 @@ pixelSubsA = {}#images that can replace transparent pixels
 for file in imgList:
 	try:
 		img = Image.open(file)
-		img.convert("RGBA")
-		st = ImageStat.Stat(img)
-		printRGB(st.mean)
-		if st.mean[3] == 255:#all solid
-			r, g, b, a = st.mean
-			pixelSubs[(r, g, b)] = file
-		else:#any transparency
-			pixelSubs[st.mean] = file
+		if img.size == (imgSize, imgSize):
+			img.convert("RGBA")
+			st = ImageStat.Stat(img)
+			printRGB(st.mean)
+			if st.mean[3] == 255:#all solid
+				r, g, b, a = st.mean
+				pixelSubs[(r, g, b)] = file
+			else:#any transparency
+				pixelSubs[st.mean] = file
 	except:
 		pass
 input()
