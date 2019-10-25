@@ -2,10 +2,28 @@ import os
 from PIL import Image
 from PIL import ImageStat
 
+pixelSubs = {} #images that can replace solid pixels
+pixelSubsA = {}#images that can replace transparent pixels
 def printRGB(rgb):
 	for i, c in enumerate(rgb):
 		print(f'{c:.0f}', 'RGBA'[i], sep='', end=' ')
 	print('')
+def dist(a, b):
+	c, d = [a[i]-b[i] for i in range(len(a))], 0#vector subt.
+	for i in range(len(a)):
+		d = d + c[i]**2
+	return sqrt(d)
+def closest(point, alpha=False):
+	minDist, recordP = 1024, 0#tuple([0]*4)
+	for p, f in pixelSubs.items():
+		if dist(p, point) < minDist:
+			recordP = p
+			minDist = dist(p, point)
+	if alpha:
+		for p, f in pixelSubsA.items():
+			if dist(p, point) < minDist:
+				recordP = p
+				minDist = dist(p, point)
 
 
 srcPack = 'assets'	#name of 'recourcepack'
@@ -19,8 +37,6 @@ for path, folders, files in os.walk(dir):#add all blocks to imgList
 		imgList.append(os.path.join(path, file))
 
 print('Sorting files')
-pixelSubs = {}#images that can replace solid pixels
-pixelSubsA = {}#images that can replace transparent pixels
 for file in imgList:
 	try:
 		img = Image.open(file)
@@ -28,10 +44,17 @@ for file in imgList:
 			img.convert("RGBA")
 			st = ImageStat.Stat(img)
 			if st.mean[3] == 255:#all solid
-				r, g, b, a = st.mean
-				pixelSubs[(r, g, b)] = file
+				pixelSubs[tuple(st.mean)] = file
 			else:#any transparency
 				pixelSubsA[tuple(st.mean)] = file
 	except:
 		pass
+
+print('Making mosaics')
+'''
+imgList = []
+dir = os.path.join(os.getcwd(), srcPack)
+for path, folders, files in os.walk(dir):#add all textures to imgList
+	for file in files:
+		imgList.append(os.path.join(path, file))'''
 input()
