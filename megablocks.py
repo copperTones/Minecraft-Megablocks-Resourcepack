@@ -24,6 +24,7 @@ def closest(point, alpha=False):
 			if dist(p, point) < minDist:
 				recordP = p
 				minDist = dist(p, point)
+	return recordP
 
 
 srcPack = 'assets'	#name of 'recourcepack'
@@ -31,8 +32,8 @@ imgSize = 16		#size of images accepted
 
 print('Getting files')
 imgList = []
-dir = os.path.join(os.getcwd(), srcPack, 'minecraft', 'textures', 'block')
-for path, folders, files in os.walk(dir):#add all blocks to imgList
+packDir = os.path.join(os.getcwd(), srcPack, 'minecraft', 'textures', 'block')
+for path, folders, files in os.walk(packDir):#add all blocks to imgList
 	for file in files:
 		imgList.append(os.path.join(path, file))
 
@@ -51,10 +52,18 @@ for file in imgList:
 		pass
 
 print('Making mosaics')
-'''
 imgList = []
-dir = os.path.join(os.getcwd(), srcPack)
-for path, folders, files in os.walk(dir):#add all textures to imgList
+packDir = os.path.join(os.getcwd(), srcPack)
+for path, folders, files in os.walk(packDir):
 	for file in files:
-		imgList.append(os.path.join(path, file))'''
+		try:
+			srcImg = Image.open(os.path.join(path, file))
+			res = [imgSize*i for i in list(srcImg.size)]
+			print(srcImg.size, tuple(res))
+			# img = Image.new('RGBA', tuple(res))#scale by imgSize
+			# img.save(os.path.join(os.getcwd(), 'assets2', file), 'PNG')
+			srcImg.resize(tuple(res))#scale by imgSize
+			srcImg.save(os.path.join(os.getcwd(), 'assets2', file), 'PNG')
+		except BaseException:
+			pass
 input()
