@@ -27,16 +27,11 @@ for file in imgList:
 		if img.size == (imgSize, imgSize):
 			img.convert("RGBA")
 			st = ImageStat.Stat(img)
-			printRGB(st.mean)
 			if st.mean[3] == 255:#all solid
 				r, g, b, a = st.mean
 				pixelSubs[(r, g, b)] = file
 			else:#any transparency
-				pixelSubs[st.mean] = file
+				pixelSubsA[tuple(st.mean)] = file
 	except:
 		pass
-input()
-print(pixelSubs)
-input()
-print(pixelSubsA)
 input()
