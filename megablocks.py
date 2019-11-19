@@ -72,22 +72,16 @@ for srcPath, folders, files in os.walk(srcPack):
 		except OSError:#skip .meta
 			pass
 		else:
+			srcImg = srcImg.convert("RGBA")
 			pix = srcImg.load()
 			srcRes = srcImg.size
 			res = [i*imgScl for i in srcRes]
 			srcImg = srcImg.resize(tuple(res))#scale by imgScl
-			srcImg.save(os.path.join(path, file), 'PNG')
-			# print(file, tuple(res))
 			
 			for y in range(srcRes[1]):
 				for x in range(srcRes[0]):
-					try:
-						replace = Image.open(closest(pix[x, y]))
-						replace.convert("RGBA")
-						srcImg.paste(replace, (x*imgScl, y*imgScl))
-					except OSError as e:
-						print(pix[x, y])#(203, 119, 79, 255)
-						print(type(e), e)
-			if input() == ' ':
-				srcImg.show()
+					replace = Image.open(closest(pix[x, y]))
+					srcImg.paste(replace, (x*imgScl, y*imgScl))
+			srcImg.save(os.path.join(path, file), 'PNG')
+			print('saved', os.path.join(path, file))
 input()
