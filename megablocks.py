@@ -28,12 +28,13 @@ def closest(point, alpha=False):
 	return recordP
 
 
-srcPack = 'assets'	#name of 'recourcepack'
+srcPack = 'assets'	#where to take block textures
+newPack = 'assets2'	#name of new resource pack
 imgScl = 16			#size of images accepted
 
 print('Getting files')
 imgList = []
-packDir = os.path.join(os.getcwd(), srcPack, 'minecraft', 'textures', 'block')
+packDir = os.path.join(srcPack, 'minecraft', 'textures', 'block')
 for path, folders, files in os.walk(packDir):#add all blocks to imgList
 	for file in files:
 		imgList.append(os.path.join(path, file))
@@ -51,17 +52,19 @@ for file in imgList:
 
 print('Making mosaics')
 imgList = []
-packDir = os.path.join(os.getcwd(), srcPack)
-for path, folders, files in os.walk(packDir):
-	# if len(files) > 0:
-		# for folder in folders:#create nonexistent folder
+for srcPath, folders, files in os.walk(srcPack):
+	path = srcPath.replace(srcPack, newPack, 1)
+	if len(files) == 0:
+		for folder in folders:#create nonexistent folder
+			os.mkdir(os.path.join(path, folder))
 	for file in files:
 		try:
 			srcImg = Image.open(os.path.join(path, file))
-			res = [imgScl*i for i in list(srcImg.size)]
-			srcImg = srcImg.resize(tuple(res))#scale by imgScl
-			srcImg.save(os.path.join(os.getcwd(), 'assets2', file), 'PNG')
-			# print(srcImg.size, tuple(res))
 		except OSError:#skip .meta
 			pass
+		else:
+			res = [imgScl*i for i in list(srcImg.size)]
+			srcImg = srcImg.resize(tuple(res))#scale by imgScl
+			srcImg.save(os.path.join(path, file), 'PNG')
+			print(srcImg.size, tuple(res))
 input()
