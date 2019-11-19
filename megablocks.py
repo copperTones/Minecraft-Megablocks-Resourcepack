@@ -28,7 +28,7 @@ def closest(point, alpha=False):
 
 
 srcPack = 'assets'	#name of 'recourcepack'
-imgSize = 16		#size of images accepted
+imgScl = 16			#size of images accepted
 
 print('Getting files')
 imgList = []
@@ -41,7 +41,7 @@ print('Sorting files')
 for file in imgList:
 	try:
 		img = Image.open(file)
-		if img.size == (imgSize, imgSize):
+		if img.size == (imgScl, imgScl):
 			img.convert("RGBA")
 			st = ImageStat.Stat(img)
 			if st.mean[3] == 255:#all solid
@@ -55,15 +55,16 @@ print('Making mosaics')
 imgList = []
 packDir = os.path.join(os.getcwd(), srcPack)
 for path, folders, files in os.walk(packDir):
+	#for #create if nonexistent
 	for file in files:
 		try:
 			srcImg = Image.open(os.path.join(path, file))
-			res = [imgSize*i for i in list(srcImg.size)]
-			print(srcImg.size, tuple(res))
-			# img = Image.new('RGBA', tuple(res))#scale by imgSize
+			res = [imgScl*i for i in list(srcImg.size)]
+			# img = Image.new('RGBA', tuple(res))#scale by imgScl
 			# img.save(os.path.join(os.getcwd(), 'assets2', file), 'PNG')
-			srcImg.resize(tuple(res))#scale by imgSize
+			srcImg = srcImg.resize(tuple(res))#scale by imgScl
 			srcImg.save(os.path.join(os.getcwd(), 'assets2', file), 'PNG')
+			print(srcImg.size, tuple(res))
 		except BaseException:
 			pass
 input()
