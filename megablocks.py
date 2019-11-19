@@ -17,17 +17,19 @@ def closest(point, alpha=False):
 	if len(point) > 3:
 		if point[3] != 255:#is transparent
 			alpha = True
-	minDist, recordP = 1024, 0
+	minDist, recordP, recordF = 1024, 0, '???'
 	for p, f in pixelSubs:
 		if distSq(p, point) < minDist:
 			recordP = p
+			recordF = f
 			minDist = distSq(p, point)
 	if alpha:#then also...
 		for p, f in pixelSubsA:
 			if distSq(p, point) < minDist:
 				recordP = p
+				recordF = f
 				minDist = distSq(p, point)
-	return recordP
+	return recordF
 
 
 srcPack = 'assets'	#where to take block textures
@@ -56,7 +58,6 @@ for file in imgList:
 			else:
 				pixelSubsA.append((avg, file))
 
-print(*pixelSubs, sep=' ----- ')
 print('Making images')
 # imgList = []
 if not os.path.isdir(newPack):
@@ -73,17 +74,21 @@ for srcPath, folders, files in os.walk(srcPack):
 		else:
 			pix = srcImg.load()
 			srcRes = srcImg.size
-			res = [imgScl*i for i in srcRes]
+			res = [i*imgScl for i in srcRes]
 			srcImg = srcImg.resize(tuple(res))#scale by imgScl
 			srcImg.save(os.path.join(path, file), 'PNG')
 			# print(file, tuple(res))
-			try:
-				for x, y in [(x, y) for y in range(srcRes[1]) for x in range(srcRes[0])]:
-					replace = closest(pix[x, y])
-					print(pix[x, y], replace)
-			except BaseException as e:
-				print(type(e), e)
-			input()
-			print(pixelSubs)
-			input()
+			
+			for y in range(srcRes[1]):
+				for x in range(srcRes[0]):
+					try:
+						replace = Image.open(closest(pix[x, y]))
+						print(pix[x, y], replace)
+						replace.convert("RGBA")
+						srcImg.paste(replace, (x*imgScl, y*imgScl))
+					except BaseException as e:
+						print(type(e), e)
+						# input()
+			if input() == ' ':
+				srcImg.show()
 input()
