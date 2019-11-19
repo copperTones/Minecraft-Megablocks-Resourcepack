@@ -60,7 +60,7 @@ for srcPath, folders, files in os.walk(srcPack):
 		os.mkdir(path)
 	for file in files:
 		try:
-			srcImg = Image.open(os.path.join(path, file))
+			srcImg = Image.open(os.path.join(srcPath, file))
 		except OSError:#skip .meta
 			pass
 		else:
