@@ -1,7 +1,6 @@
 import os
 from PIL import Image
 from PIL import ImageStat
-import sys#testing purposes
 
 pixelSubs = {} #images that can replace solid pixels
 pixelSubsA = {}#images that can replace transparent pixels
@@ -9,22 +8,25 @@ def printRGB(rgb):
 	for i, c in enumerate(rgb):
 		print(f'{c:.0f}', 'RGBA'[i], sep='', end=' ')
 	print('')
-def dist(a, b):
+def distSq(a, b):
 	c, d = [a[i]-b[i] for i in range(len(a))], 0#vector subt.
 	for i in range(len(a)):
 		d = d + c[i]**2
-	return sqrt(d)
+	return d #only a closest search
 def closest(point, alpha=False):
-	minDist, recordP = 1024, 0#tuple([0]*4)
+	if len(point) > 3:
+		if point[3] != 255:#is transparent
+			alpha = True
+	minDist, recordP = 1024, 0
 	for p, f in pixelSubs.items():
-		if dist(p, point) < minDist:
+		if distSq(p, point) < minDist:
 			recordP = p
-			minDist = dist(p, point)
-	if alpha:
+			minDist = distSq(p, point)
+	if alpha:#then also...
 		for p, f in pixelSubsA.items():
-			if dist(p, point) < minDist:
+			if distSq(p, point) < minDist:
 				recordP = p
-				minDist = dist(p, point)
+				minDist = distSq(p, point)
 	return recordP
 
 
@@ -51,7 +53,7 @@ for file in imgList:
 			st = ImageStat.Stat(img)
 
 print('Making images')
-imgList = []
+# imgList = []
 if not os.path.isdir(newPack):
 	os.mkdir(newPack)
 for srcPath, folders, files in os.walk(srcPack):
@@ -64,8 +66,19 @@ for srcPath, folders, files in os.walk(srcPack):
 		except OSError:#skip .meta
 			pass
 		else:
-			res = [imgScl*i for i in list(srcImg.size)]
+			pix = srcImg.load()
+			srcRes = srcImg.size
+			res = [imgScl*i for i in srcRes]
 			srcImg = srcImg.resize(tuple(res))#scale by imgScl
 			srcImg.save(os.path.join(path, file), 'PNG')
-			print(srcImg.size, tuple(res))
+			# print(file, tuple(res))
+			try:
+				for x, y in [(x, y) for y in range(srcRes[1]) for x in range(srcRes[0])]:
+					replace = closest(pix[x, y])
+					print(pix[x, y], replace)
+			except BaseException as e:
+				print(type(e), e)
+			input()
+			print(pixelSubsA)
+			input()
 input()
