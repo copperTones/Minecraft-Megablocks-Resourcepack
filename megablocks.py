@@ -2,8 +2,8 @@ import os
 from PIL import Image
 from PIL import ImageStat
 
-pixelSubs = {} #images that can replace solid pixels
-pixelSubsA = {}#images that can replace transparent pixels
+pixelSubs = [] #images that can replace solid pixels
+pixelSubsA = []#images that can replace transparent pixels
 def printRGB(rgb):
 	for i, c in enumerate(rgb):
 		print(f'{c:.0f}', 'RGBA'[i], sep='', end=' ')
@@ -18,12 +18,12 @@ def closest(point, alpha=False):
 		if point[3] != 255:#is transparent
 			alpha = True
 	minDist, recordP = 1024, 0
-	for p, f in pixelSubs.items():
+	for p, f in pixelSubs:
 		if distSq(p, point) < minDist:
 			recordP = p
 			minDist = distSq(p, point)
 	if alpha:#then also...
-		for p, f in pixelSubsA.items():
+		for p, f in pixelSubsA:
 			if distSq(p, point) < minDist:
 				recordP = p
 				minDist = distSq(p, point)
@@ -50,8 +50,13 @@ for file in imgList:
 	else:
 		if img.size == (imgScl, imgScl):
 			img = img.convert("RGBA")
-			st = ImageStat.Stat(img)
+			avg = ImageStat.Stat(img).mean
+			if avg[3] == 255:
+				pixelSubs.append((avg, file))
+			else:
+				pixelSubsA.append((avg, file))
 
+print(*pixelSubs, sep=' ----- ')
 print('Making images')
 # imgList = []
 if not os.path.isdir(newPack):
@@ -79,6 +84,6 @@ for srcPath, folders, files in os.walk(srcPack):
 			except BaseException as e:
 				print(type(e), e)
 			input()
-			print(pixelSubsA)
+			print(pixelSubs)
 			input()
 input()
