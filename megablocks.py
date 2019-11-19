@@ -1,6 +1,7 @@
 import os
 from PIL import Image
 from PIL import ImageStat
+import sys#testing purposes
 
 pixelSubs = {} #images that can replace solid pixels
 pixelSubsA = {}#images that can replace transparent pixels
@@ -41,30 +42,26 @@ print('Sorting files')
 for file in imgList:
 	try:
 		img = Image.open(file)
-		if img.size == (imgScl, imgScl):
-			img.convert("RGBA")
-			st = ImageStat.Stat(img)
-			if st.mean[3] == 255:#all solid
-				pixelSubs[tuple(st.mean)] = file
-			else:#any transparency
-				pixelSubsA[tuple(st.mean)] = file
-	except:
+	except OSError:#skip .meta
 		pass
+	else:
+		if img.size == (imgScl, imgScl):
+			img = img.convert("RGBA")
+			st = ImageStat.Stat(img)
 
 print('Making mosaics')
 imgList = []
 packDir = os.path.join(os.getcwd(), srcPack)
 for path, folders, files in os.walk(packDir):
-	#for #create if nonexistent
+	# if len(files) > 0:
+		# for folder in folders:#create nonexistent folder
 	for file in files:
 		try:
 			srcImg = Image.open(os.path.join(path, file))
 			res = [imgScl*i for i in list(srcImg.size)]
-			# img = Image.new('RGBA', tuple(res))#scale by imgScl
-			# img.save(os.path.join(os.getcwd(), 'assets2', file), 'PNG')
 			srcImg = srcImg.resize(tuple(res))#scale by imgScl
 			srcImg.save(os.path.join(os.getcwd(), 'assets2', file), 'PNG')
-			print(srcImg.size, tuple(res))
-		except BaseException:
+			# print(srcImg.size, tuple(res))
+		except OSError:#skip .meta
 			pass
 input()
