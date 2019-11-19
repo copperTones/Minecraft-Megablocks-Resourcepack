@@ -50,13 +50,14 @@ for file in imgList:
 			img = img.convert("RGBA")
 			st = ImageStat.Stat(img)
 
-print('Making mosaics')
+print('Making images')
 imgList = []
+if not os.path.isdir(newPack):
+	os.mkdir(newPack)
 for srcPath, folders, files in os.walk(srcPack):
 	path = srcPath.replace(srcPack, newPack, 1)
-	if len(files) == 0:
-		for folder in folders:#create nonexistent folder
-			os.mkdir(os.path.join(path, folder))
+	if not os.path.isdir(path):
+		os.mkdir(path)
 	for file in files:
 		try:
 			srcImg = Image.open(os.path.join(path, file))
