@@ -17,7 +17,7 @@ def closest(point, alpha=False):
 	if len(point) > 3:
 		if point[3] != 255:#is transparent
 			alpha = True
-	minDist, recordP, recordF = 1024, 0, '???'
+	minDist, recordP, recordF = 4000000, 0, '???'
 	for p, f in pixelSubs:
 		if distSq(p, point) < minDist:
 			recordP = p
@@ -83,12 +83,11 @@ for srcPath, folders, files in os.walk(srcPack):
 				for x in range(srcRes[0]):
 					try:
 						replace = Image.open(closest(pix[x, y]))
-						print(pix[x, y], replace)
 						replace.convert("RGBA")
 						srcImg.paste(replace, (x*imgScl, y*imgScl))
-					except BaseException as e:
+					except OSError as e:
+						print(pix[x, y])#(203, 119, 79, 255)
 						print(type(e), e)
-						# input()
 			if input() == ' ':
 				srcImg.show()
 input()
