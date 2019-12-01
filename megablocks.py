@@ -6,7 +6,7 @@ pixelSubs = [] #images that can replace solid pixels
 pixelSubsA = []#images that can replace transparent pixels
 def printRGB(rgb):
 	for i, c in enumerate(rgb):
-		print(f'{c:.0f}', 'RGBA'[i], sep='', end=' ')
+		pass#print(f'{c:.0f}', 'RGBA'[i], sep='', end=' ')
 	print('')
 def distSq(a, b):
 	c, d = [a[i]-b[i] for i in range(len(a))], 0#vector subt.
@@ -47,7 +47,7 @@ print('Sorting files')
 for file in imgList:
 	try:
 		img = Image.open(file)
-	except OSError:#skip .meta
+	except (OSError, IOError):#skip .meta
 		pass
 	else:
 		if img.size == (imgScl, imgScl):
@@ -69,7 +69,7 @@ for srcPath, folders, files in os.walk(srcPack):
 	for file in files:
 		try:
 			srcImg = Image.open(os.path.join(srcPath, file))
-		except OSError:#skip .meta
+		except (OSError, IOError):#skip .meta
 			pass
 		else:
 			srcImg = srcImg.convert("RGBA")
